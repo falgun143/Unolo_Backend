@@ -28,7 +28,10 @@ model Visit {
   visit_time String
   images     Image[]
   job        Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  jobId      String 
+  jobId      String
+
+  @@index([store_id]) 
+  @@index([jobId])   
 }
 
 

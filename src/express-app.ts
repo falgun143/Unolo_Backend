@@ -4,10 +4,20 @@ import sharp from "sharp";
 import axios from "axios";
 export const app = express();
 import { v4 as uuidv4 } from "uuid";
+import { createClient } from "redis";
 
 import { Payload } from "./types/type.js";
 const prisma = new PrismaClient();
+const redisClient = createClient({
+  username: "default",
+  password: "deTHhVG1JmWejocMr664MbGnh4OCwOKp",
+  socket: {
+    host: "redis-10271.crce179.ap-south-1-1.ec2.redns.redis-cloud.com",
+    port: 10271,
+  },
+});
 
+redisClient.connect();
 
 app.post("/processJob", async (req: any, res: any) => {
   const payload: Payload = req.body;
@@ -87,50 +97,61 @@ app.get("/api/status", async (req: any, res: any) => {
 });
 
 async function processJob(jobId: string, visits: any) {
-    try {
-      for (const visit of visits) {
-        try {
-          for (const imageUrl of visit.image_url) {
+  try {
+    for (const visit of visits) {
+      try {
+        const imagesToInsert = [];
+
+        for (const imageUrl of visit.image_url) {
+          const cachedImage = await redisClient.get(`image:${imageUrl}`);
+
+          let imageBuffer: Buffer;
+          if (cachedImage) {
+            // Using cached image
+            imageBuffer = Buffer.from(cachedImage, "base64");
+          } else {
+            // Downloading image and caching it
             const response = await axios.get(imageUrl, {
               responseType: "arraybuffer",
             });
-            console.log(response.data);
-  
-            const image = await sharp(response.data);
-            const metadata = await image.metadata();
-            const perimeter = 2 * (metadata.width! + metadata.height!);
-  
-            await new Promise((resolve) =>
-              setTimeout(resolve, Math.random() * 300 + 100)
-            );
-  
-            await prisma.image.create({
-              data: {
-                url: imageUrl,
-                perimeter,
-                visit: {
-                  connect: { id: visit.id },
-                },
-              },
-            });
+            imageBuffer = response.data;
+            await redisClient.set(
+              `image:${imageUrl}`,
+              imageBuffer.toString("base64"),
+              { EX: 86400 }
+            ); // Caching for 24 hours
           }
-        } catch (error) {
-          await prisma.error.create({
-            data: {
-              store_id: visit.store_id,
-              message: "Image download failed",
-              job: {
-                connect: { id: jobId },
-              },
-            },
+          const image = sharp(imageBuffer);
+          const metadata = await image.metadata();
+          const perimeter = 2 * (metadata.width! + metadata.height!);
+
+          // Batching images
+          imagesToInsert.push({
+            url: imageUrl,
+            visitId: visit.id as number,
+            perimeter,
           });
         }
+
+        if (imagesToInsert.length > 0) {
+          await prisma.image.createMany({ data: imagesToInsert });
+        }
+      } catch (error) {
+        await prisma.error.create({
+          data: {
+            store_id: visit.store_id,
+            message: "Image download failed",
+            job: {
+              connect: { id: jobId },
+            },
+          },
+        });
       }
-  
+
       const errorCount = await prisma.error.count({
         where: { jobId },
       });
-  
+
       if (errorCount > 0) {
         await prisma.job.update({
           where: { id: jobId },
@@ -142,23 +163,24 @@ async function processJob(jobId: string, visits: any) {
           data: { status: "completed" },
         });
       }
-  
+
       console.log("Job processing completed");
-    } catch (error) {
-      await prisma.job.update({
-        where: { id: jobId },
-        data: {
-          status: "failed",
-        },
-      });
-      await prisma.error.create({
-        data: {
-          store_id: "unknown",
-          message: "Unexpected error occurred",
-          job: {
-            connect: { id: jobId },
-          },
-        },
-      });
     }
+  } catch (error) {
+    await prisma.job.update({
+      where: { id: jobId },
+      data: {
+        status: "failed",
+      },
+    });
+    await prisma.error.create({
+      data: {
+        store_id: "unknown",
+        message: "Unexpected error occurred",
+        job: {
+          connect: { id: jobId },
+        },
+      },
+    });
   }
+}
