@@ -1,0 +1,58 @@
+# load-test.yml
+config:
+  target: "http://localhost:3000"  # Replace with your API URL
+  phases:
+    - duration: 10  # Increase the duration of the warm-up phase to 10 seconds
+      arrivalRate: 1
+      rampTo: 20
+      name: "Warm up phase"
+    - duration: 20  # Increase the duration of the sustained load phase to 20 seconds
+      arrivalRate: 20
+      name: "Sustained load"
+    - duration: 5  # Increase the duration of the ramp-down phase to 5 seconds
+      arrivalRate: 20
+      rampTo: 1
+      name: "Ramp down"
+  processor: "./load-test.js"
+  
+scenarios:
+  - name: "Submit visits API test"
+    weight: 6
+    flow:
+      - function: "generateSmallPayload"
+      - post:
+          url: "/api/submit"
+          json: "{{ payload }}"
+          expect:
+            - statusCode: 201
+            - hasProperty: "job_id"
+  
+  - name: "Medium batch test"
+    weight: 2
+    flow:
+      - function: "generateMediumPayload"
+      - post:
+          url: "/api/submit"
+          json: "{{ payload }}"
+          expect:
+            - statusCode: 201
+            
+  - name: "Large batch test"
+    weight: 1
+    flow:
+      - function: "generateLargePayload"
+      - post:
+          url: "/api/submit"
+          json: "{{ payload }}"
+          expect:
+            - statusCode: 201
+            
+  - name: "Error cases test"
+    weight: 1
+    flow:
+      - function: "generateInvalidPayload"
+      - post:
+          url: "/api/submit"
+          json: "{{ payload }}"
+          expect:
+            - statusCode: 400
