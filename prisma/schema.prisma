@@ -9,44 +9,43 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
-
 }
 
 model Job {
-  id      String   @id @default(uuid())
-  status  String
-  visits  Visit[]
+  id     String  @id @default(uuid())
+  status String
+  visits Visit[]
   error  Error[]
 }
 
 model Visit {
-  id         Int      @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   store_id   String
-  visit_time String
+  visit_time String // Ensure this field is included
   images     Image[]
-  job        Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  job        Job     @relation(fields: [jobId], references: [id], onDelete: Cascade)
   jobId      String
 
-  @@index([store_id]) 
-  @@index([jobId])   
+ @@index([id])
+  @@index([store_id])
+  @@index([jobId])
 }
 
-
 model Image {
-  id        Int      @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   url       String
-  perimeter Float?   @default(100)
-  visit     Visit    @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  perimeter Float? @default(100)
+  visit     Visit  @relation(fields: [visitId], references: [id], onDelete: Cascade)
   visitId   Int
 }
 
 model Error {
-  id      Int   @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   store_id String
-  message String
-  job     Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  jobId   String
+  message  String
+  job      Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  jobId    String
 }

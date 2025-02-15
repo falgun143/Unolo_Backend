@@ -21,7 +21,7 @@ scenarios:
     flow:
       - function: "generateSmallPayload"
       - post:
-          url: "/api/submit"
+          url: "/processJob"
           json: "{{ payload }}"
           expect:
             - statusCode: 201
@@ -32,7 +32,7 @@ scenarios:
     flow:
       - function: "generateMediumPayload"
       - post:
-          url: "/api/submit"
+          url: "/processJob"
           json: "{{ payload }}"
           expect:
             - statusCode: 201
@@ -42,7 +42,7 @@ scenarios:
     flow:
       - function: "generateLargePayload"
       - post:
-          url: "/api/submit"
+          url: "/processJob"
           json: "{{ payload }}"
           expect:
             - statusCode: 201
@@ -52,7 +52,7 @@ scenarios:
     flow:
       - function: "generateInvalidPayload"
       - post:
-          url: "/api/submit"
+          url: "/processJob"
           json: "{{ payload }}"
           expect:
             - statusCode: 400
