@@ -3,13 +3,31 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "loadtest": " node ./dist/load-test/load-test.js",
+    "dev": "nodemon ./dist/index.js",
+    "start": "node ./dist/index.js"
   },
   "keywords": [],
   "author": "Falgun Pal",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^4.21.2"
+    "@prisma/client": "^6.3.1",
+    "artillery": "^2.0.21",
+    "axios": "^1.7.9",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "redis": "^4.7.0",
+    "sharp": "^0.33.5",
+    "uuid": "^11.0.5"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.2",
+    "@types/sharp": "^0.31.1",
+    "@types/uuid": "^10.0.0",
+    "prisma": "^6.3.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
   }
 }

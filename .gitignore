@@ -1,2 +1,6 @@
 node_modules
 .env
+test-run-report.json
+test-run-report.json.html
+prisma/migrations
+dist
