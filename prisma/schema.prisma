@@ -15,16 +15,17 @@ datasource db {
 }
 
 model Job {
-  id     String  @id @default(uuid())
-  status String
-  visits Visit[]
-  error  Error[]
+  id             String  @id @default(uuid())
+  status         String
+  scheduled_time DateTime?
+  visits         Visit[]
+  error          Error[]
 }
 
 model Visit {
   id         Int     @id @default(autoincrement())
   store_id   String
-  visit_time String // Ensure this field is included
+  visit_time String 
   images     Image[]
   job        Job     @relation(fields: [jobId], references: [id], onDelete: Cascade)
   jobId      String

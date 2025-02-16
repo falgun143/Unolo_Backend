@@ -3,6 +3,7 @@ import prisma from "./lib/prismaClient";
 import { v4 as uuidv4 } from "uuid";
 import { redisClient } from "./redisConfig/redis";
 import { Payload } from "./types/type";
+import moment from "moment-timezone";
 
 export const app = express();
 
@@ -25,16 +26,20 @@ app.post("/processJob", async (req: any, res: any) => {
 
   try {
     let visits = payload.visits;
-    console.log("Visits are", visits);
     if (!visits || visits.length === 0) {
       return res.status(400).json({ error: "No visits provided" });
     }
 
     const jobId = uuidv4();
-     await prisma.job.create({
+    const scheduledTime = payload.scheduled_time
+      ? moment.tz(payload.scheduled_time, "Asia/Kolkata").toDate()
+      : new Date();
+    console.log("Scheduled time is " + scheduledTime);
+    const createdJob = await prisma.job.create({
       data: {
         id: jobId,
         status: "ongoing",
+        scheduled_time: scheduledTime,
         visits: {
           create: visits.map((visit: any) => ({
             store_id: visit.store_id,
@@ -48,13 +53,24 @@ app.post("/processJob", async (req: any, res: any) => {
         },
       },
       include: {
-        visits: true,
+        visits: {
+          select: {
+            id: true,
+            store_id: true,
+            visit_time: true,
+            images: {
+              select: {
+                url: true,
+              },
+            },
+          },
+        },
       },
     });
-
+   
     // Add job to Redis queue for processing
     await redisClient.zAdd("scheduled_jobs", [
-      { score: Date.now(), value: jobId },
+      { score: scheduledTime.getTime(), value: JSON.stringify({ jobId, visits: createdJob.visits }) },
     ]);
     console.log(`Job ${request} scheduled for processing`);
 

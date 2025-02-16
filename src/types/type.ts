@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 
 export type Payload = {
+  scheduled_time: string;
   count: number;
   visits: Visit[];
 };
