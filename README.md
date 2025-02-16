@@ -1,7 +1,32 @@
-<div style="display: flex; align-items: center;">
-  <img src="./images/Unolo.png" alt="Logo" width="40" height="40">
-  <h1 style="margin-left: 10px;">Unolo Backend Assignment</h1>
+<div align="center">
+  <div style="display: inline-block; text-align: left;">
+    <img src="./images/Unolo.png" alt="Logo" width="40" height="40" style="vertical-align: middle;">
+    <span style="font-size: 2em; font-weight: bold; margin-left: 10px; vertical-align: middle;">Unolo Backend Assignment</span>
+  </div>
+
+  [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+  [![Express](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+  [![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
+  [![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
+
+  A robust backend system for processing and scheduling image-related jobs with high concurrency support.
 </div>
+
+## 📚 Table of Contents
+
+- [Demo Video](#-demo-video)
+- [Tech Stack](#️-tech-stack)
+- [Quick Start](#-quick-start)
+- [Load Testing](#load-testing)
+- [API Documentation](#-api-documentation)
+- [Architecture](#️-architecture)
+- [Acknowledgments](#-acknowledgments)
+
+## 🎬 Demo Video
+
+[Watch Demo Video](https://github.com/user-attachments/assets/c8488271-e6da-437a-822a-7149399c4c74)
+Please watch the full video to understand the whole application. For high Quality of video check about section of the repo at top right.
 
 ## 🛠️ Tech Stack
 
@@ -52,11 +77,11 @@
    npm run worker
    ```
 
-## Load Testing Application
+## Load Testing
 
 ### Note
 
-Before load testing, for the ease of load testing, go to `load-test.js` file in `src/load-test` and change the month, day, hour, and minute to the latest time. For example, if the current time is 3:37 PM on 15th Feb 2025 in India, set the month to 1(Not 2 as in js months are 0 based indexed), day to 15, hour to 3, and minute to 38 (for checking if the processes are scheduled or not after 1 minute). Keep the seconds randomized.
+Before load testing, for the ease of load testing, go to `load-test.js` file in `src/load-test` and change the month, day, hour, and minute to the latest time. For example, if the current time is 3:37 PM on 15th Feb 2025 in India, set the month to 1 (not 2 as in JS months are 0-based indexed), day to 15, hour to 3, and minute to 38 (for checking if the processes are scheduled or not after 1 minute). Keep the seconds randomized.
 
 ### Run Load Testing
 
@@ -89,9 +114,7 @@ artillery run src/load-test/load-test.yaml
     },
     {
       "store_id": "S01408764",
-      "image_url": [
-        "https://www.gstatic.com/webp/gallery/3.jpg"
-      ],
+      "image_url": ["https://www.gstatic.com/webp/gallery/3.jpg"],
       "visit_time": "10:05:00"
     }
   ]
@@ -130,22 +153,19 @@ artillery run src/load-test/load-test.yaml
 
 ### Design Choices
 
-1. **Cluster Module**: The use of the `cluster` module allows the application to take advantage of multiple CPU cores, improving performance and scalability.
-2. **Prisma ORM**: Prisma is used for database management, providing a type-safe and efficient way to interact with the database.
-3. **Redis**: Redis is used for caching and job scheduling using a queuing mechanism, ensuring fast access to frequently used data and efficient job processing. Even in high concurrency, duplicate job execution is avoided as the workers use a locking system.
-4. **Moment-Timezone**: Moment-timezone is used to handle time zone conversions, ensuring that scheduled times are correctly interpreted and stored.
+1. **Cluster Module** 🔄: The use of the `cluster` module allows the application to take advantage of multiple CPU cores, improving performance and scalability.
+2. **Prisma ORM** 💾: Prisma is used for database management, providing a type-safe and efficient way to interact with the database.
+3. **Redis** ⚡: Redis is used for caching and job scheduling using a queuing mechanism, ensuring fast access to frequently used data and efficient job processing. Even in high concurrency, duplicate job execution is avoided as the workers use a locking system.
+4. **Moment-Timezone** 🌐: Moment-timezone is used to handle time zone conversions, ensuring that scheduled times are correctly interpreted and stored.
 
 ### Trade-offs
 
 1. **Complexity vs. Performance**: The use of the `cluster` module and Redis adds complexity to the application but significantly improves performance and scalability.
 2. **Type Safety vs. Flexibility**: Using TypeScript and Prisma provides type safety and reduces runtime errors but requires additional setup and configuration.
 
-## 📄 Assumptions
-
-  - The database schema is predefined and migrations are managed using Prisma. Google-translate-api-x is used instead of the Google Translate API as it is easier to use.
-
 ## 🙏 Acknowledgments
 
+- Unolo Team for giving the assignment.
 - Prisma team for the ORM.
 - Express team for the web framework.
 - Google Translate API team for the translation service.

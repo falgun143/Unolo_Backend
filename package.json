@@ -6,7 +6,7 @@
     "loadtest": " node ./dist/load-test/load-test.js",
     "dev": "nodemon ./dist/index.js",
     "start": "node ./dist/index.js",
-    "worker": "nodemon ./dist/worker.js"
+    "worker": "node ./dist/worker.js"
   },
   "keywords": [],
   "author": "Falgun Pal",
