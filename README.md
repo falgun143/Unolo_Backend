@@ -25,7 +25,8 @@
 
 ## 🎬 Demo Video
 
-[Watch Demo Video](https://github.com/user-attachments/assets/c8488271-e6da-437a-822a-7149399c4c74)
+https://github.com/user-attachments/assets/c8488271-e6da-437a-822a-7149399c4c74
+
 Please watch the full video to understand the whole application. For high Quality of video check about section of the repo at top right.
 
 ## 🛠️ Tech Stack
