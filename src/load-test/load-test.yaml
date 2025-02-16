@@ -1,6 +1,6 @@
 # load-test.yml
 config:
-  target: "http://localhost:3000"  # Replace with your API URL
+  target: "http://localhost:3000"  
   phases:
     - duration: 10  # Increase the duration of the warm-up phase to 10 seconds
       arrivalRate: 1

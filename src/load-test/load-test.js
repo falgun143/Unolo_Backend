@@ -1,5 +1,4 @@
-import moment from "moment-timezone";
-
+const moment = require("moment-timezone");
 function generateRandomStoreId() {
   return `S${String(Math.floor(Math.random() * 10000000)).padStart(8, "0")}`;
 }

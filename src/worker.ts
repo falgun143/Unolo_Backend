@@ -5,7 +5,7 @@ import axios from "axios";
 import sharp from "sharp";
 import { redisClient } from "./redisConfig/redis";
 
-const workerWorkers =  os.cpus().length;
+const workerWorkers = os.cpus().length;
 
 async function fetchNextJob() {
   while (true) {
@@ -23,6 +23,7 @@ async function fetchNextJob() {
       if (!lockAcquired) continue;
 
       await redisClient.zRem("scheduled_jobs", jobs[0]);
+      console.log(`Fetched job: ${jobId}`);
       return { jobId, visits };
     } catch (error) {
       console.error("Error fetching next job:", error);
@@ -52,7 +53,6 @@ async function processJobs() {
     } finally {
       await redisClient.del(`lock:${jobId}`); // Release the lock
       console.log(`job: ${jobId} processed`);
-
     }
   }
 }
@@ -71,7 +71,7 @@ async function processJob(jobId: string, visits: any) {
               imageBuffer = Buffer.from(cachedImage, "base64");
             } else {
               const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
-              imageBuffer = response.data;
+              imageBuffer = Buffer.from(response.data as ArrayBuffer);
               await redisClient.set(`image:${imageUrl}`, imageBuffer.toString("base64"), { EX: 86400 });
             }
 
@@ -107,6 +107,7 @@ async function processJob(jobId: string, visits: any) {
       where: { id: jobId },
       data: { status: errorCount > 0 ? "failed" : "completed" },
     });
+    console.log(`Job ${jobId} processed with status: ${errorCount > 0 ? "failed" : "completed"}`);
   } catch (error) {
     console.log(error);
     await prisma.job.update({ where: { id: jobId }, data: { status: "failed" } });

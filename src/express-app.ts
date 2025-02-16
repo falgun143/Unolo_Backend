@@ -69,10 +69,10 @@ app.post("/processJob", async (req: any, res: any) => {
     });
    
     // Add job to Redis queue for processing
-    await redisClient.zAdd("scheduled_jobs", [
+    const result = await redisClient.zAdd("scheduled_jobs", [
       { score: scheduledTime.getTime(), value: JSON.stringify({ jobId, visits: createdJob.visits }) },
     ]);
-    console.log(`Job ${request} scheduled for processing`);
+    console.log(`Job ${request} scheduled for processing with result: ${result}`);
 
     res
       .status(200)
