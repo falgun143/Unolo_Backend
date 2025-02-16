@@ -125,7 +125,7 @@ artillery run src/load-test/load-test.yaml
 ### Visual Understanding
 
 <div style="display: flex; align-items: center;">
-  <img src="./images/Architecture.png" alt="Architecture" width="1100" height="700">
+  <img src="./images/Architecture.png" alt="Architecture" width="1200" height="750">
 </div>
 
 ### Design Choices
